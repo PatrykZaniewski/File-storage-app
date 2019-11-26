@@ -1,23 +1,29 @@
 version: '3'
 
 services:
+  nginx:
+    image: chaberb/nginx-ssl
+    depends_on:
+      - web
+      - cdn
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx-uwsgi.conf:/etc/nginx/nginx.conf
+
   web:
-    build: app
+    build: web
     image: chaberb/flask-jwt
     volumes:
-      - ./app:/var/www/app
+      - ./web:/var/www/app
     depends_on:
       - redis
-    ports:
-      - "5000:5000"
 
-  jwt:
+  cdn:
     image: chaberb/flask-jwt
     volumes:
-      - ./jwt:/var/www/app
+      - ./cdn:/var/www/app
       - /tmp:/tmp
-    ports:
-      - "5001:5000"
 
   redis:
     image: redis

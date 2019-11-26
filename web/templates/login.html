@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8"/>
+    <title>PDFile</title>
+    <script type=text/javascript src="{{url_for('static', filename='js/login.js')}}"></script>
+    <link rel="stylesheet" type="text/css"  href="../static/css/login.css">
+
+</head>
+<body>
+    <div class="container">
+        <form class="form" action="/auth" method="POST" >
+            <h1 class="title" id="title">PDFile</h1>
+            <input type="text" name="username" placeholder="Username" class="fieldInput"/>
+            <input type="password" name="password" placeholder="Password" class="fieldInput"/>
+            <input type="submit" class="button" id="sendButton" value="Sign in"/>
+        </form>
+    </div>
+</body>
+</html>

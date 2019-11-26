@@ -32,6 +32,7 @@ def download(fid):
 
 @app.route('/upload', methods=['POST'])
 def upload():
+  print("xd", flush=True)
   f = request.files.get('file')
   t = request.form.get('token')
   c = request.form.get('callback')

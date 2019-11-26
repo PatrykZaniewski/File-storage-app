@@ -1,0 +1,72 @@
+body {
+    background: linear-gradient(to right, rgba(255,253,208,1) 0%, rgba(255,255,245,1) 54%, rgba(255,253,208,1) 100%)fixed;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 3fr 2fr 3fr;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+            ". form .";
+    width: 100%;
+    height: 100%;
+    margin: 1.5% 0 3% 0;
+}
+
+.form {
+    background: linear-gradient(180deg, #AAAAAA 0%, #DCDCDC 51.04%, #AAAAAA 100%);
+    grid-area: form;
+    color: #000000;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 3px;
+}
+
+.title {
+    background: #727272;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    padding: 5px;
+    color: whitesmoke;
+    text-shadow: 4px 4px black;
+    margin: 0 0 2.5% 0;
+}
+
+.error, .info{
+    display: grid;
+    text-align: center;
+    font-size: 14px;
+    margin: -2.5% 0 0 0;
+    border-radius: 2px 2px 0 0;
+}
+
+.error{
+    color: red;
+}
+
+.info{
+    color: greenyellow;
+}
+
+.fieldInput{
+    box-sizing: border-box;
+    width: 90%;
+    margin: 2% 5% 5% 5%;
+    padding: 8px 0 8px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    display: inline-block;
+}
+
+.button {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    padding: 12px;
+    border: none;
+    cursor: pointer;
+    width: 90%;
+    margin: 2% 5% 5% 5%;
+    border-radius: 5px;
+}

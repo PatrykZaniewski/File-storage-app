@@ -51,9 +51,8 @@ def welcome():
     if session_id:
         if session.checkSession(session_id):
             fid = session.getNicknameSession(session_id)
-            download_token = create_download_token(fid).decode('ascii')
-            upload_token = create_upload_token().decode('ascii')
-            return render_template("index.html", fid=fid)
+            token = createToken(fid).decode('ascii')
+            return render_template("index.html", fid=fid, token=token)
         else:
             fid = ''
             response = redirect("/login")
@@ -66,7 +65,7 @@ def welcome():
 def auth():
     username = request.form.get('username')
     password = request.form.get('password')
-    if username is not None and password is not None:
+    if username is not "" and password is not "":
         response = make_response('', 303)
 
         if redisConn.checkUser(username, password) is True:
@@ -74,7 +73,7 @@ def auth():
             response.set_cookie("session_id", session_id, max_age=SESSION_TIME)
             response.headers["Location"] = "/index"
         else:
-            response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
+            response.set_cookie("session_id", "INVALIDATE", max_age=1)
             response.headers["Location"] = "/login"
 
         return response
@@ -87,7 +86,7 @@ def logout():
     if session_id:
         session.deleteSession(session_id)
         response = redirect("/login")
-        response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
+        response.set_cookie("session_id", "LOGGED_OUT", max_age=1)
         return response
     return redirect("/login")
 
@@ -109,14 +108,9 @@ def uploaded():
     return f"<h1>APP</h1> User {session_id} uploaded {fid} ({content_type})", 200
 
 
-def create_download_token(fid):
+def createToken(fid):
     exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
-    return encode({"iss": "web.company.com", "exp": exp}, JWT_SECRET, "HS256")
-
-
-def create_upload_token():
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
-    return encode({"iss": "web.company.com", "exp": exp}, JWT_SECRET, "HS256")
+    return encode({"iss": "web:5000", "exp": exp}, JWT_SECRET, algorithm="HS256")
 
 
 def redirect(location):
