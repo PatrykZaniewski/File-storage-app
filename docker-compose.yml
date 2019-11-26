@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  web:
+    build: app
+    image: chaberb/flask-jwt
+    volumes:
+      - ./app:/var/www/app
+    depends_on:
+      - redis
+    ports:
+      - "5000:5000"
+
+  jwt:
+    image: chaberb/flask-jwt
+    volumes:
+      - ./jwt:/var/www/app
+      - /tmp:/tmp
+    ports:
+      - "5001:5000"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

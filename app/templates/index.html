@@ -1,0 +1,13 @@
+<h1>APP</h1>
+    <form action="/logout">
+        <button type="submit">Wyloguj</button>
+    </form>
+
+    <a href="jwt/download/{{fid}}?token={download_token}&content_type={content_type}">{{fid}}</a>
+
+    <form action="web/upload" method="POST" enctype="multipart/form-data">
+      <input type="file" name="file"/>
+      <input type="hidden" name="token"    value="{upload_token}" />
+      <input type="hidden" name="callback" value="{WEB}/callback" />
+      <input type="submit"/>
+    </form>
