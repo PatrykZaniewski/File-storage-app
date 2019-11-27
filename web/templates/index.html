@@ -11,14 +11,13 @@
         <button type="submit">Wyloguj</button>
     </form>
 
-    <a href="localhost:5001/download/{{fid}}?token={{token}}&content_type=multipart/form-data">{{fid}}</a>
-
-
+    <a href="https://cdn.company.com/download/{{fid}}?token={{token}}&content_type=multipart/form-data">{{fid}}</a>
 
     <form action="https://cdn.company.com/upload" method="POST" enctype="multipart/form-data">
       <input type="file" name="file"/>
       <input type="hidden" name="token"    value="{{token}}" />
-      <input type="hidden" name="callback" value="localhost:5000/callback" />
+      <input type="hidden" name="callback" value="https://web.company.com/callback" />
+        <input type="hidden" name="fid" value="{{ fid }}"/>
       <input type="submit"/>
     </form>
 </body>

@@ -1,4 +1,3 @@
-from jwt import encode, InvalidTokenError
 from uuid import uuid4
 from flask import Flask
 from flask import request
@@ -10,6 +9,7 @@ import datetime
 import redisHandler
 import sessionHandler
 import redis
+import jwt
 
 load_dotenv(verbose=True)
 
@@ -39,7 +39,7 @@ def index():
         return redirect("/login")
     return redirect("/index")
 
-
+#TODO jesli zalogowany to blokada loginu!
 @app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
@@ -51,7 +51,7 @@ def welcome():
     if session_id:
         if session.checkSession(session_id):
             fid = session.getNicknameSession(session_id)
-            token = createToken(fid).decode('ascii')
+            token = createToken(fid).decode('utf-8')
             return render_template("index.html", fid=fid, token=token)
         else:
             fid = ''
@@ -104,14 +104,13 @@ def uploaded():
     if not fid:
         return f"<h1>APP</h1> Upload successfull, but no fid returned", 500
     content_type = request.args.get('content_type', 'text/plain')
-    session[session_id] = (fid, content_type)
+    #session[session_id] = (fid, content_type)
     return f"<h1>APP</h1> User {session_id} uploaded {fid} ({content_type})", 200
 
 
 def createToken(fid):
     exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
-    return encode({"iss": "web:5000", "exp": exp}, JWT_SECRET, algorithm="HS256")
-
+    return jwt.encode({"iss": "web.company.com", "exp": exp, "fid": fid}, JWT_SECRET, "HS256")
 
 def redirect(location):
     response = make_response('', 303)

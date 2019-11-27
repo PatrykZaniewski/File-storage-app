@@ -6,7 +6,7 @@ class RedisHandler:
         self.redisConnection = redisConnection
 
     def initUser(self):
-        self.redisConnection.hset('account', "test", "123")
+        self.redisConnection.hset('account', "test.pdf", "123")
         self.redisConnection.hset('account', "admin", "password")
         self.redisConnection.hset('account', "Jeremi", "Wisniowiecki")
         self.redisConnection.hset('account', "Stanislaw", "Moniuszko")
