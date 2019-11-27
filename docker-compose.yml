@@ -23,7 +23,7 @@ services:
     image: chaberb/flask-jwt
     volumes:
       - ./cdn:/var/www/app
-      - /tmp:/tmp
+      - ./tmp:/tmp
 
   redis:
     image: redis

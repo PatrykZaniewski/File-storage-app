@@ -10,6 +10,8 @@ import redisHandler
 import sessionHandler
 import redis
 import jwt
+import requests
+import json
 
 load_dotenv(verbose=True)
 
@@ -40,9 +42,11 @@ def index():
     return redirect("/index")
 
 #TODO jesli zalogowany to blokada loginu!
+
 @app.route('/login', methods=['GET'])
 def login():
     return render_template('login.html')
+
 
 
 @app.route('/index')
@@ -50,11 +54,14 @@ def welcome():
     session_id = request.cookies.get('session_id')
     if session_id:
         if session.checkSession(session_id):
-            fid = session.getNicknameSession(session_id)
-            token = createToken(fid).decode('utf-8')
-            return render_template("index.html", fid=fid, token=token)
+            uid = session.getNicknameSession(session_id)
+            downloadToken = createDownloadToken(uid).decode('utf-8')
+            uploadToken = createUploadToken(uid).decode('utf-8')
+            listToken = createListToken(uid).decode('utf-8')
+            listOfFiles = json.loads(requests.get("http://cdn:5000/list/" + uid + "?token=" + listToken).content)
+            print(type(listOfFiles), flush=True)
+            return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken, listToken=listToken, listOfFiles=listOfFiles)
         else:
-            fid = ''
             response = redirect("/login")
             response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
             return response
@@ -94,23 +101,33 @@ def logout():
 @app.route('/callback')
 def uploaded():
     session_id = request.cookies.get('session_id')
-    fid = request.args.get('fid')
+    uid = request.args.get('uid')
     err = request.args.get('error')
     if not session_id:
         return redirect("/login")
 
     if err:
         return f"<h1>APP</h1> Upload failed: {err}", 400
-    if not fid:
-        return f"<h1>APP</h1> Upload successfull, but no fid returned", 500
+    if not uid:
+        return f"<h1>APP</h1> Upload successfull, but no uid returned", 500
     content_type = request.args.get('content_type', 'text/plain')
-    #session[session_id] = (fid, content_type)
-    return f"<h1>APP</h1> User {session_id} uploaded {fid} ({content_type})", 200
+    #session[session_id] = (uid, content_type)
+    return f"<h1>APP</h1> User {session_id} uploaded {uid} ({content_type})", 200
 
 
-def createToken(fid):
+def createDownloadToken(uid):
     exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
-    return jwt.encode({"iss": "web.company.com", "exp": exp, "fid": fid}, JWT_SECRET, "HS256")
+    return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "download"}, JWT_SECRET, "HS256")
+
+
+def createUploadToken(uid):
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
+    return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "upload"}, JWT_SECRET, "HS256")
+
+
+def createListToken(uid):
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
+    return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "list"}, JWT_SECRET, "HS256")
 
 def redirect(location):
     response = make_response('', 303)

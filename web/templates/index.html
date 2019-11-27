@@ -11,13 +11,18 @@
         <button type="submit">Wyloguj</button>
     </form>
 
-    <a href="https://cdn.company.com/download/{{fid}}?token={{token}}&content_type=multipart/form-data">{{fid}}</a>
+    <a href="https://cdn.company.com/download/{{uid}}?token={{downloadToken}}&content_type=multipart/form-data">{{uid}}</a>
+    <a href="https://cdn.company.com/list/{{uid}}?token={{listToken}}">{{uid}} asd</a>
+
+    {% for file in listOfFiles %}
+        <a href="https://cdn.company.com/download/{{uid}}?token={{downloadToken}}&content_type=multipart/form-data&filename={{file}}">{{ file }}</a>
+    {% endfor %}
 
     <form action="https://cdn.company.com/upload" method="POST" enctype="multipart/form-data">
       <input type="file" name="file"/>
-      <input type="hidden" name="token"    value="{{token}}" />
+      <input type="hidden" name="token"    value="{{uploadToken}}" />
       <input type="hidden" name="callback" value="https://web.company.com/callback" />
-        <input type="hidden" name="fid" value="{{ fid }}"/>
+        <input type="hidden" name="uid" value="{{ uid }}"/>
       <input type="submit"/>
     </form>
 </body>
