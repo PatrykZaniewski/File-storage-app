@@ -3,6 +3,7 @@ from uuid import uuid4
 from flask import Flask
 from flask import request
 from flask import make_response
+from flask import send_file
 from dotenv import load_dotenv
 from os import getenv
 load_dotenv(verbose=True)
@@ -34,8 +35,9 @@ def list(uid):
   return json.dumps(listOfFiles)
 
 
-@app.route('/download/<uid>', methods=['GET'])
-def download(uid):
+@app.route('/files', methods=['GET'])
+def downloadd():
+  uid = request.args.get('uid')
   token = request.args.get('token')
   filename = request.args.get('filename')
   if len(uid) == 0:
@@ -47,17 +49,12 @@ def download(uid):
   payload = jwt.decode(token, JWT_SECRET)
   if payload.get('uid') != uid or payload.get('action') != 'download':
     return '<h1>CDN</h1> Incorrect token payload', 401
-  content_type = request.args.get('content_type')
-  file = '/tmp/' + uid + "/" + filename
-  print(file, flush=True)
-  with open(file, 'rb') as f:
-    d = f.read()
-    response = make_response(d, 200)
-    response.headers['Content-Type'] = content_type
-    return response
+  file = '/tmp/test/' + filename
+  file = open(file, 'rb')
+  return send_file(file, attachment_filename=filename, as_attachment=True)
 
 
-@app.route('/upload', methods=['POST'])
+@app.route('/files', methods=['POST'])
 def upload():
   f = request.files.get('file')
   t = request.form.get('token')

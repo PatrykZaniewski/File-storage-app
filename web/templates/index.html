@@ -3,27 +3,29 @@
 <head>
     <meta charset="utf-8"/>
     <title>Repozytorium plików</title>
-    <link rel="stylesheet" type="text/css"  href="../static/css/login.css">
+    <link rel="stylesheet" type="text/css"  href="../static/css/index.css">
 </head>
 <body>
-<h1>APP</h1>
-    <form action="/logout">
-        <button type="submit">Wyloguj</button>
-    </form>
+        <div class="info">You are logged in as: {{ uid }}</div>
+        <form action="/logout">
+            <button type="submit">Wyloguj</button>
+        </form>
 
-    <a href="https://cdn.company.com/download/{{uid}}?token={{downloadToken}}&content_type=multipart/form-data">{{uid}}</a>
-    <a href="https://cdn.company.com/list/{{uid}}?token={{listToken}}">{{uid}} asd</a>
+    <div class="container">
+        <h2 class="title">Twoje pliki</h2>
+        <div class="fileList">
+        {% for file in listOfFiles %}
+            <a class="file" href="https://cdn.company.com/files?token={{downloadToken}}&content_type=multipart/form-data&filename={{file}}&uid={{ uid }}">{{ file }}</a><br>
+        {% endfor %}
+        </div>
 
-    {% for file in listOfFiles %}
-        <a href="https://cdn.company.com/download/{{uid}}?token={{downloadToken}}&content_type=multipart/form-data&filename={{file}}">{{ file }}</a>
-    {% endfor %}
-
-    <form action="https://cdn.company.com/upload" method="POST" enctype="multipart/form-data">
-      <input type="file" name="file"/>
-      <input type="hidden" name="token"    value="{{uploadToken}}" />
-      <input type="hidden" name="callback" value="https://web.company.com/callback" />
-        <input type="hidden" name="uid" value="{{ uid }}"/>
-      <input type="submit"/>
-    </form>
+        <form class="form" action="https://cdn.company.com/files" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file"/>
+            <input type="hidden" name="token"    value="{{uploadToken}}" />
+            <input type="hidden" name="callback" value="https://web.company.com/callback" />
+            <input type="hidden" name="uid" value="{{ uid }}"/>
+            <input type="submit"/>
+        </form>
+    </div>
 </body>
 </html>
