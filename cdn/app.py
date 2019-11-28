@@ -76,6 +76,7 @@ def upload():
   if not os.path.exists("/tmp/" + uid):
     os.mkdir("/tmp/" + uid)
 
+  #TODO zrobic zamykanie zeby czekalo na save'a
   content_type = "multipart/form-data"
   f.save('/tmp/' + uid + "/" + f.filename)
   f.close()
