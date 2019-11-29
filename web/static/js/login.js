@@ -15,7 +15,6 @@ function errorLoginData(){
 }
 
 function checkData(){
-    let empty = false;
     let inputs = document.querySelectorAll(".fieldInput");
     if (inputs[0].value.length == 0 || inputs[1].value.length == 0)
     {

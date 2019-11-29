@@ -3,6 +3,7 @@ from flask import Flask
 from flask import request
 from flask import make_response
 from flask import render_template
+from flask import session as se
 from dotenv import load_dotenv
 from os import getenv
 import datetime
@@ -19,6 +20,7 @@ HTML = """<!doctype html>
 <head><meta charset="utf-8"/></head>"""
 
 app = Flask(__name__)
+app.secret_key = "super secret key"
 CDN = getenv("CDN_HOST")
 WEB = getenv("WEB_HOST")
 SESSION_TIME = int(getenv("SESSION_TIME"))
@@ -33,6 +35,7 @@ redisConn.initUser()
 
 session = sessionHandler.SessionHandler(redis)
 
+fileStatus = ''
 
 @app.route('/')
 def index():
@@ -53,15 +56,19 @@ def login():
 
 @app.route('/index')
 def welcome():
+    err = se.get('err')
+    se['err'] = ''
     session_id = request.cookies.get('session_id')
     if session_id:
         if session.checkSession(session_id):
+            message = createFileMessage(err)
             uid = session.getNicknameSession(session_id)
             downloadToken = createDownloadToken(uid).decode('utf-8')
             uploadToken = createUploadToken(uid).decode('utf-8')
             listToken = createListToken(uid).decode('utf-8')
             listOfFiles = json.loads(requests.get("http://cdn:5000/list/" + uid + "?token=" + listToken).content)
-            return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken, listOfFiles=listOfFiles)
+            return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken,
+                                   listOfFiles=listOfFiles, message=message)
         else:
             response = redirect("/login")
             response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
@@ -102,36 +109,45 @@ def logout():
 @app.route('/callback')
 def uploaded():
     session_id = request.cookies.get('session_id')
-    err = request.data
+    err = request.args.get('error')
+    print(err, flush=True)
     if session_id:
         if session.checkSession(session_id):
-
-            if err:
-                return f"<h1>APP</h1> Upload failed: {err}", 400
-            if not err:
-                return f"<h1>APP</h1> Upload successfull, but no uid returned", 500
-    content_type = request.args.get('content_type', 'text/plain')
-    return f"<h1>APP</h1> User {session_id} uploaded {err} ({content_type})", 200
-
-
-    return redirect("/login")
+            se['err'] = err
+    return redirect('/login')
 
 
 def createDownloadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "download"}, JWT_SECRET, "HS256")
 
 
 def createUploadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "upload"}, JWT_SECRET, "HS256")
 
 
 def createListToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "list"}, JWT_SECRET, "HS256")
+
 
 def redirect(location):
     response = make_response('', 303)
     response.headers["Location"] = location
     return response
+
+def createFileMessage(err):
+    message = ''
+    print(err, flush=True)
+    if err == "no file provided":
+        message = f'<div class="error">Nie wybrano pliku!</div>'
+    elif err == "no token provided":
+        message = f'<div class="error">Brak tokenu - odśwież stronę!</div>'
+    elif err == "invalid token":
+        message = f'<div class="error">Token nieprawidłowy lub ważność wygasła!</div>'
+    elif err == "invalid token payload":
+        message = f'<div class="error">Niezgodność tokenu z użytkonikiem i/lub akcją!</div>'
+    elif err == "ok":
+        message = f'<div class="info"> Plik dodano! </div>'
+    return message

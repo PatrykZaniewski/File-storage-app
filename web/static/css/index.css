@@ -32,3 +32,21 @@ body {
     text-shadow: 4px 4px black;
     margin: 0 0 0 0;
 }
+
+.error, .info{
+    text-align: center;
+    font-size: 14px;
+    margin: 0 0 0 0;
+    border-radius: 2px 2px 0 0;
+    text-shadow: 2px 2px black;
+
+}
+
+.error{
+    color: red;
+}
+
+.info{
+    color: greenyellow;
+}
+

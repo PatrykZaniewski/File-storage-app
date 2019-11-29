@@ -29,15 +29,15 @@ body {
     padding: 5px;
     color: whitesmoke;
     text-shadow: 4px 4px black;
-    margin: 0 0 2.5% 0;
+    margin: 0 0 0 0;
 }
 
 .error, .info{
     display: grid;
     text-align: center;
     font-size: 14px;
-    margin: -2.5% 0 0 0;
     border-radius: 2px 2px 0 0;
+    margin: -5% 0 0 0;
 }
 
 .error{

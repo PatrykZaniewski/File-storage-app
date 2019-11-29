@@ -16,7 +16,7 @@
             </div>
             <div class="col-6">
                 <div class="background">
-                <h2 class="title">Twoje pliki</h2>
+                    <h2 class="title">Twoje pliki {{ message | safe}}</h2>
                 <div  class="list-group">
                     {% for file in listOfFiles %}
                     <a class="list-group-item list-group-item-action" href="https://cdn.company.com/files?token={{downloadToken}}&content_type=multipart/form-data&filename={{file}}&uid={{ uid }}">{{ file }}</a>
@@ -32,7 +32,7 @@
                 </div >
             </div>
             <div class="col-3">
-                <div class="info">
+                <div class>
                     Jesteś zalogowany jako: {{ uid }}
                     <a href="/logout">(Wyloguj)</a>
                 </div>
