@@ -40,7 +40,7 @@ def downloadd():
   uid = request.args.get('uid')
   token = request.args.get('token')
   filename = request.args.get('filename')
-  if len(uid) == 0:
+  if uid is None or len(uid) == 0:
     return '<h1>CDN</h1> Missing uid', 404
   if token is None:
     return '<h1>CDN</h1> No token', 401
@@ -59,30 +59,25 @@ def upload():
   f = request.files.get('file')
   t = request.form.get('token')
   c = request.form.get('callback')
+
   uid = request.form.get('uid')
-  if f.filename is "":
-    return redirect(f"{c}?error=No+file+provided") if c \
-    else ('<h1>CDN</h1> No file provided', 400)
+  if f is None or f.filename is "":
+    return redirect("no+file+provided")
   if t is None:
-    return redirect(f"{c}?error=No+token+provided") if c \
-    else ('<h1>CDN</h1> No token provided', 401)
+    return redirect("no+token+provided")
+
   if not valid(t):
-    return redirect(f"{c}?error=Invalid+token") if c \
-    else ('<h1>CDN</h1> Invalid token', 401)
+    return redirect("invalid+token")
   payload = jwt.decode(t, JWT_SECRET)
   if payload.get('uid') != uid or payload.get('action') != 'upload':
-    return '<h1>CDN</h1> Incorrect token payload', 401
+    return redirect("invalid+token+payload")
 
   if not os.path.exists("/tmp/" + uid):
     os.mkdir("/tmp/" + uid)
-
-  #TODO zrobic zamykanie zeby czekalo na save'a
-  content_type = "multipart/form-data"
   f.save('/tmp/' + uid + "/" + f.filename)
   f.close()
 
-  return redirect(f"{c}?uid={uid}&content_type={content_type}") if c \
-  else (f'<h1>CDN</h1> Uploaded {uid}', 200)
+  return redirect("ok")
 
 def valid(token):
   try:
@@ -92,7 +87,9 @@ def valid(token):
     return False
   return True
 
-def redirect(location):
-  response = make_response('', 303)
-  response.headers["Location"] = location
+
+def redirect(error):
+  response = make_response("", 303)
+  response.headers["Location"] = "https://web.company.com/index"
+  response.headers["Content-Type"] = "multipart/form-data"
   return response

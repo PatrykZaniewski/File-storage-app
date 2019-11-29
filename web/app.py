@@ -41,12 +41,14 @@ def index():
         return redirect("/login")
     return redirect("/index")
 
-#TODO jesli zalogowany to blokada loginu!
 
 @app.route('/login', methods=['GET'])
 def login():
-    return render_template('login.html')
-
+    session_id = request.cookies.get('session_id')
+    if session_id:
+        if session.checkSession(session_id):
+            return redirect("/index")
+    return render_template("login.html")
 
 
 @app.route('/index')
@@ -59,8 +61,7 @@ def welcome():
             uploadToken = createUploadToken(uid).decode('utf-8')
             listToken = createListToken(uid).decode('utf-8')
             listOfFiles = json.loads(requests.get("http://cdn:5000/list/" + uid + "?token=" + listToken).content)
-            print(type(listOfFiles), flush=True)
-            return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken, listToken=listToken, listOfFiles=listOfFiles)
+            return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken, listOfFiles=listOfFiles)
         else:
             response = redirect("/login")
             response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
@@ -101,32 +102,33 @@ def logout():
 @app.route('/callback')
 def uploaded():
     session_id = request.cookies.get('session_id')
-    uid = request.args.get('uid')
-    err = request.args.get('error')
-    if not session_id:
-        return redirect("/login")
+    err = request.data
+    if session_id:
+        if session.checkSession(session_id):
 
-    if err:
-        return f"<h1>APP</h1> Upload failed: {err}", 400
-    if not uid:
-        return f"<h1>APP</h1> Upload successfull, but no uid returned", 500
+            if err:
+                return f"<h1>APP</h1> Upload failed: {err}", 400
+            if not err:
+                return f"<h1>APP</h1> Upload successfull, but no uid returned", 500
     content_type = request.args.get('content_type', 'text/plain')
-    #session[session_id] = (uid, content_type)
-    return f"<h1>APP</h1> User {session_id} uploaded {uid} ({content_type})", 200
+    return f"<h1>APP</h1> User {session_id} uploaded {err} ({content_type})", 200
+
+
+    return redirect("/login")
 
 
 def createDownloadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "download"}, JWT_SECRET, "HS256")
 
 
 def createUploadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "upload"}, JWT_SECRET, "HS256")
 
 
 def createListToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=JWT_SESSION_TIME)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=10)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "list"}, JWT_SECRET, "HS256")
 
 def redirect(location):
