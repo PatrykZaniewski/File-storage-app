@@ -1,30 +1,28 @@
 window.addEventListener("load", afterLoad);
 var sendButton;
 
-function afterLoad(){
+function afterLoad() {
     sendButton = document.getElementById("sendButton")
     sendButton.addEventListener("click", checkData);
     errorLoginData()
 }
 
-function errorLoginData(){
+function errorLoginData() {
     var cookieValue = document.cookie.split('=')[1];
-    if(cookieValue == "INVALIDATE" || cookieValue == "LOGGED_OUT") {
+    if (cookieValue == "INVALIDATE" || cookieValue == "LOGGED_OUT") {
         messageLogin(cookieValue);
     }
 }
 
-function checkData(){
+function checkData() {
     let inputs = document.querySelectorAll(".fieldInput");
-    if (inputs[0].value.length == 0 || inputs[1].value.length == 0)
-    {
+    if (inputs[0].value.length == 0 || inputs[1].value.length == 0) {
         messageLogin("EMPTY");
         event.preventDefault();
     }
 }
 
-function messageLogin(type)
-{
+function messageLogin(type) {
     let parent = document.getElementById("title");
     if (parent.childElementCount > 0) {
         parent.removeChild(parent.children[0]);

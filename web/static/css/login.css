@@ -1,13 +1,12 @@
 body {
-    background: linear-gradient(to right, rgba(255,253,208,1) 0%, rgba(255,255,245,1) 54%, rgba(255,253,208,1) 100%)fixed;
+    background: linear-gradient(to right, rgba(255, 253, 208, 1) 0%, rgba(255, 255, 245, 1) 54%, rgba(255, 253, 208, 1) 100%) fixed;
 }
 
 .container {
     display: grid;
     grid-template-columns: 3fr 2fr 3fr;
     grid-template-rows: 1fr;
-    grid-template-areas:
-            ". form .";
+    grid-template-areas: ". form .";
     width: 100%;
     height: 100%;
     margin: 1.5% 0 3% 0;
@@ -32,7 +31,7 @@ body {
     margin: 0 0 0 0;
 }
 
-.error, .info{
+.error, .info {
     display: grid;
     text-align: center;
     font-size: 14px;
@@ -40,15 +39,15 @@ body {
     margin: -5% 0 0 0;
 }
 
-.error{
+.error {
     color: red;
 }
 
-.info{
+.info {
     color: greenyellow;
 }
 
-.fieldInput{
+.fieldInput {
     box-sizing: border-box;
     width: 90%;
     margin: 2% 5% 5% 5%;

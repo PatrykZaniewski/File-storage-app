@@ -3,40 +3,45 @@
 <head>
     <meta charset="utf-8"/>
     <title>Repozytorium plików</title>
-    <script type=text/javascript src="{{url_for('static', filename='js/index.js')}}"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css"  href="../static/css/index.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-        <div class="row">
-            <div class="col-3">
-            </div>
-            <div class="col-6">
-                <div class="background">
-                    <h2 class="title">Twoje pliki {{ message | safe}}</h2>
-                <div  class="list-group">
-                    {% for file in listOfFiles %}
-                    <a class="list-group-item list-group-item-action" href="https://cdn.company.com/files?token={{downloadToken}}&content_type=multipart/form-data&filename={{file}}&uid={{ uid }}">{{ file }}</a>
-                    {% endfor %}
-                    <form class="form" action="https://cdn.company.com/files" method="POST" enctype="multipart/form-data">
-                        <input type="file" name="file"/>
-                        <input type="hidden" name="token"    value="{{uploadToken}}" />
-                        <input type="hidden" name="callback" value="https://web.company.com/callback" />
-                        <input type="hidden" name="uid" value="{{ uid }}"/>
-                        <input type="submit"/>
+<div class="row">
+    <div class="col-3">
+    </div>
+    <div class="col-6">
+        <div class="background">
+            <h2 class="title">Twoje pliki {{ message | safe }}</h2>
+            <div class="list-group">
+                {% for file in listOfFiles %}
+                    <a class="list-group-item list-group-item-action"
+                       href="https://cdn.company.com/files?token={{ downloadToken }}
+                    &content_type=multipart/form-data&filename={{ file }}&uid={{ uid }}">{{ file }}</a>
+                    <form action="https://cdn.company.com/delfiles?token={{ deleteToken }}
+                    &content_type=multipart/form-data&filename={{ file }}&uid={{ uid }}" method="post">
+                        <button class="delete">Usuń</button>
                     </form>
-                </div>
-                </div >
+                {% endfor %}
             </div>
-            <div class="col-3">
-                <div class>
-                    Jesteś zalogowany jako: {{ uid }}
-                    <a href="/logout">(Wyloguj)</a>
-                </div>
-            </div>
+            <form class="form" action="https://cdn.company.com/files" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file"/>
+                <input type="hidden" name="token" value="{{ uploadToken }}"/>
+                <input type="hidden" name="callback" value="https://web.company.com/callback"/>
+                <input type="hidden" name="uid" value="{{ uid }}"/>
+                <input type="submit"/>
+            </form>
         </div>
+    </div>
+    <div class="col-3">
+        <div class>
+            Jesteś zalogowany jako: {{ uid }}
+            <a href="/logout">(Wyloguj)</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

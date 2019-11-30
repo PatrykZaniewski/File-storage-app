@@ -3,6 +3,7 @@ import hashlib
 import datetime
 from uuid import uuid4
 
+
 class SessionHandler:
     def __init__(self, redisConnection):
         self.redisConnection = redisConnection
@@ -18,7 +19,8 @@ class SessionHandler:
     def checkSession(self, id):
         session = self.redisConnection.hget('sessionLogin', id)
         if session is not None:
-            expTime = datetime.datetime.strptime(self.redisConnection.hget('sessionTime', id).decode("UTF-8"), '%Y-%m-%d %H:%M:%S.%f')
+            expTime = datetime.datetime.strptime(self.redisConnection.hget('sessionTime', id).decode("UTF-8"),
+                                                 '%Y-%m-%d %H:%M:%S.%f')
             if expTime > datetime.datetime.now():
                 return True
         return False
@@ -29,9 +31,3 @@ class SessionHandler:
 
     def getNicknameSession(self, id):
         return self.redisConnection.hget('sessionLogin', id).decode("UTF-8")
-
-
-
-
-
-

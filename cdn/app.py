@@ -9,13 +9,10 @@ from os import getenv
 
 load_dotenv(verbose=True)
 import json
-import re
 import os
 
 app = Flask(__name__)
 JWT_SECRET = getenv('JWT_SECRET')
-
-app.secret_key = "test"
 
 
 @app.route('/list/<uid>', methods=['GET'])
@@ -39,7 +36,7 @@ def list(uid):
 
 
 @app.route('/files', methods=['GET'])
-def downloadd():
+def download():
     uid = request.args.get('uid')
     token = request.args.get('token')
     filename = request.args.get('filename')
@@ -79,6 +76,27 @@ def upload():
     f.close()
 
     return redirect("ok")
+
+
+@app.route('/delfiles', methods=['POST'])
+def delete():
+    uid = request.args.get('uid')
+    token = request.args.get('token')
+    filename = request.args.get('filename')
+    if os.path.isfile("/tmp/" + uid + "/" + filename) is False:
+        return redirect("missing+file")
+    if uid is None or len(uid) == 0:
+        return redirect("missing+uid")
+    if token is None:
+        return redirect("no+token+provided")
+    if not valid(token):
+        return redirect("invalid+token")
+    payload = jwt.decode(token, JWT_SECRET)
+    if payload.get('uid') != uid or payload.get('action') != 'delete':
+        return redirect("invalid+token+payload")
+    file = '/tmp/test/' + filename
+    os.remove(file)
+    return redirect("deleted")
 
 
 def valid(token):

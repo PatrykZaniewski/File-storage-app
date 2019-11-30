@@ -1,21 +1,20 @@
 body {
-    background: linear-gradient(to right, rgba(255,253,208,1) 0%, rgba(255,255,245,1) 54%, rgba(255,253,208,1) 100%)fixed;
+    background: linear-gradient(to right, rgba(255, 253, 208, 1) 0%, rgba(255, 255, 245, 1) 54%, rgba(255, 253, 208, 1) 100%) fixed;
 }
 
-.col-6{
+.col-6 {
     margin: 5% 0 0 0;
 }
 
-.col-6 .form{
-    margin: 1% 0 1% 0;
-    align-self: center;
+.form {
+    margin: 2.5% 0% 2.5% 17.5%;
 }
 
-.col-3{
+.col-3 {
     text-align: right;
 }
 
-.background{
+.background {
     background: linear-gradient(180deg, #AAAAAA 0%, #DCDCDC 51.04%, #AAAAAA 100%);
     color: #000000;
     border-radius: 10px;
@@ -23,7 +22,7 @@ body {
     border-width: 3px;
 }
 
-.title{
+.title {
     background: #727272;
     text-align: center;
     border-radius: 5px 5px 0 0;
@@ -33,7 +32,7 @@ body {
     margin: 0 0 0 0;
 }
 
-.error, .info{
+.error, .info {
     text-align: center;
     font-size: 14px;
     margin: 0 0 0 0;
@@ -42,11 +41,15 @@ body {
 
 }
 
-.error{
+.error {
     color: red;
 }
 
-.info{
+.info {
     color: greenyellow;
+}
+
+.delete {
+    margin: 0 0 0 47.5%;
 }
 

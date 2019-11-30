@@ -66,9 +66,10 @@ def welcome():
             downloadToken = createDownloadToken(uid).decode('utf-8')
             uploadToken = createUploadToken(uid).decode('utf-8')
             listToken = createListToken(uid).decode('utf-8')
+            deleteToken = createDeleteToken(uid).decode('utf-8')
             listOfFiles = json.loads(requests.get("http://cdn:5000/list/" + uid + "?token=" + listToken).content)
             return render_template("index.html", uid=uid, uploadToken=uploadToken, downloadToken=downloadToken,
-                                   listOfFiles=listOfFiles, message=message)
+                                   listOfFiles=listOfFiles, deleteToken=deleteToken, message=message)
         else:
             response = redirect("/login")
             response.set_cookie("session_id", "INVALIDATE", max_age=INVALIDATE)
@@ -118,18 +119,23 @@ def uploaded():
 
 
 def createDownloadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=333)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "download"}, JWT_SECRET, "HS256")
 
 
 def createUploadToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=333)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "upload"}, JWT_SECRET, "HS256")
 
 
 def createListToken(uid):
-    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=5)
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=333)
     return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "list"}, JWT_SECRET, "HS256")
+
+
+def createDeleteToken(uid):
+    exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=333)
+    return jwt.encode({"iss": "web.company.com", "exp": exp, "uid": uid, "action": "delete"}, JWT_SECRET, "HS256")
 
 
 def redirect(location):
@@ -142,12 +148,18 @@ def createFileMessage(err):
     print(err, flush=True)
     if err == "no file provided":
         message = f'<div class="error">Nie wybrano pliku!</div>'
+    elif err == "missing file":
+        message = f'<div class="error">Wybrany plik nie istnieje!</div>'
+    elif err == "missing uid":
+        message = f'<div class="error">Nieprawidłowy użytkownik!</div>'
     elif err == "no token provided":
         message = f'<div class="error">Brak tokenu - odśwież stronę!</div>'
     elif err == "invalid token":
         message = f'<div class="error">Token nieprawidłowy lub ważność wygasła!</div>'
     elif err == "invalid token payload":
         message = f'<div class="error">Niezgodność tokenu z użytkonikiem i/lub akcją!</div>'
+    elif err == "deleted":
+        message = f'<div class="info">Plik usunięto!</div>'
     elif err == "ok":
-        message = f'<div class="info"> Plik dodano! </div>'
+        message = f'<div class="info">Plik dodano!</div>'
     return message

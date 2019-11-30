@@ -1,6 +1,7 @@
 import redis
 import hashlib
 
+
 class RedisHandler:
     def __init__(self, redisConnection):
         self.redisConnection = redisConnection
@@ -19,4 +20,3 @@ class RedisHandler:
         if self.redisConnection.hget('account', login).decode("UTF-8") != password:
             return False
         return True
-
