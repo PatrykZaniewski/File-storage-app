@@ -8,11 +8,7 @@ class RedisHandler:
 
     def initUser(self):
         self.redisConnection.hset('account', "test", "123")
-        self.redisConnection.hset('account', "Jeremi", "Wisniowiecki")
-        self.redisConnection.hset('account', "Stanislaw", "Moniuszko")
-        self.redisConnection.hset('account', "Tadeusz", "Mazowiecki")
-        self.redisConnection.hset('account', "Apoloniusz", "Tajner")
-        self.redisConnection.hset('account', "Romuald", "Traugutt")
+        self.redisConnection.hset('account', "chaberb", "bardzotajnehaslo")
 
     def checkUser(self, login, password):
         if self.redisConnection.hget('account', login) is None:

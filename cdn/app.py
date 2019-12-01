@@ -1,5 +1,6 @@
 import jwt
-from uuid import uuid4
+import json
+import os
 from flask import Flask
 from flask import request
 from flask import make_response
@@ -8,8 +9,6 @@ from dotenv import load_dotenv
 from os import getenv
 
 load_dotenv(verbose=True)
-import json
-import os
 
 app = Flask(__name__)
 JWT_SECRET = getenv('JWT_SECRET')
@@ -18,6 +17,7 @@ JWT_SECRET = getenv('JWT_SECRET')
 @app.route('/list/<uid>', methods=['GET'])
 def list(uid):
     token = request.args.get('token')
+
     if uid is None or len(uid) == 0:
         return redirect("missing+uid")
     if token is None:
@@ -27,10 +27,8 @@ def list(uid):
     payload = jwt.decode(token, JWT_SECRET)
     if payload.get('uid') != uid or payload.get('action') != 'list':
         return redirect("invalid+token+payload")
-
     if not os.path.exists("/tmp/" + uid):
         return json.dumps([])
-
     listOfFiles = os.listdir("/tmp/" + uid)
     return json.dumps(listOfFiles)
 
@@ -40,6 +38,7 @@ def download():
     uid = request.args.get('uid')
     token = request.args.get('token')
     filename = request.args.get('filename')
+
     if uid is None or len(uid) == 0:
         return redirect("missing+uid")
     if token is None:
@@ -69,12 +68,10 @@ def upload():
     payload = jwt.decode(t, JWT_SECRET)
     if payload.get('uid') != uid or payload.get('action') != 'upload':
         return redirect("invalid+token+payload")
-
     if not os.path.exists("/tmp/" + uid):
         os.mkdir("/tmp/" + uid)
     f.save('/tmp/' + uid + "/" + f.filename)
     f.close()
-
     return redirect("ok")
 
 
@@ -83,6 +80,7 @@ def delete():
     uid = request.args.get('uid')
     token = request.args.get('token')
     filename = request.args.get('filename')
+
     if os.path.isfile("/tmp/" + uid + "/" + filename) is False:
         return redirect("missing+file")
     if uid is None or len(uid) == 0:
